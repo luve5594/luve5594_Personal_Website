@@ -1,9 +1,14 @@
+console.log("JS loaded");
+
 function updateLocationOptions(){
     const modality = document.getElementById("event_modality").value;
 
     const inPersonFields = document.getElementById("in_person_fields");
     const remoteFields = document.getElementById("remote_fields");
     const attendeesField = document.getElementById("attendees_field");
+
+    const locationInput = document.getElementById("event_location");
+    const remoteInput = document.getElementById("event_remote_url");
 
 
     //Default is to hide all three fields
@@ -13,12 +18,17 @@ function updateLocationOptions(){
 
     //depending on what is selected, remove hidden tag
 
+    locationInput.required = false;
+    remoteInput.required = false;
+
     if (modality === "in_person") {
         inPersonFields.classList.remove("d-none");
         attendeesField.classList.remove("d-none");
+        locationInput.required = true;
     } else if (modality === "remote") {
         remoteFields.classList.remove("d-none");
         attendeesField.classList.remove("d-none");
+        remoteInput.required = true;
     }
 }
 
@@ -86,6 +96,7 @@ function saveEvent(){
     }
     
     document.getElementById('event_form').reset();
+    //document.getElementById('event_form').classList.remove("was-validated");
 
     const myModalElement = document.getElementById('event_modal');
     const myModal = bootstrap.Modal.getOrCreateInstance(myModalElement);
@@ -163,3 +174,39 @@ function createEventCard(eventDetails){
     event_element.appendChild(info);
     return event_element;
 }
+document.addEventListener("DOMContentLoaded", function () {
+
+   'use strict'
+
+  const forms = document.querySelectorAll('.needs-validation')
+
+  Array.from(forms).forEach(form => {
+    form.addEventListener('submit', event => {
+
+      event.preventDefault()
+
+      if (!form.checkValidity()) {
+        event.stopPropagation()
+      } else {
+        saveEvent();
+      }
+
+      form.classList.add('was-validated')
+
+    }, false)
+  })
+
+    const eventModal = document.getElementById("event_modal");
+    const eventForm = document.getElementById("event_form");
+
+    eventModal.addEventListener("show.bs.modal", function () {
+
+        if (currentEventId === null) {
+
+            eventForm.reset();
+            eventForm.classList.remove("was-validated");
+
+            updateLocationOptions();
+        }
+    });
+});
